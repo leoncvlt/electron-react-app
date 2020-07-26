@@ -11,6 +11,11 @@ export const ShowcasePage = () => {
     }
   };
 
+  const handleCreateThing = async () => {
+    const thing = { hello: "world", foo: "bar" };
+    await window.ipcRenderer.invoke("things.insert", thing);
+  };
+
   return (
     <>
       <Button text="Open files" onClick={handleDialogButton} />
@@ -24,6 +29,7 @@ export const ShowcasePage = () => {
           </ul>
         </div>
       )}
+      <Button text="Create thing" onClick={handleCreateThing} />
     </>
   );
 };
