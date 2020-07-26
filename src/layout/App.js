@@ -5,12 +5,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Appbar } from "../components/Appbar";
 import { ShowcasePage } from "../pages/ShowcasePage";
 import { useElectronTheme } from "../hooks/useElectronTheme";
-import { DocumentsPage } from "../pages/DocumentsPage";
+import { PokemonPage } from "../pages/PokemonPage";
 
 const AppContainer = styled.div`
   background-color: ${(props) => (props.className.includes("bp3-dark") ? "#30404d" : "#f5f8fa")};
-  width: 100%;
-  height: 100%;
+  min-height: 100vh;
 `;
 
 const InnerContainer = styled.div`
@@ -26,7 +25,7 @@ function App() {
         <Appbar />
         <InnerContainer>
           <Switch>
-            <Route exact path="/" component={DocumentsPage}></Route>
+            <Route exact path="/" component={PokemonPage}></Route>
             <Route exact path="/showcase" component={ShowcasePage}></Route>
           </Switch>
         </InnerContainer>

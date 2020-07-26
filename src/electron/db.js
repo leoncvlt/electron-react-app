@@ -16,9 +16,6 @@ const getDatabasePath = () => {
   }
 };
 
-const filterDocuments = (documents, query) =>
-  documents.filter((element) => Object.keys(query).every((key) => element[key] === query[key]));
-
 const create = (collection) => {
   const tablePath = path.join(getDatabasePath(), collection + ".json");
   return new Promise((resolve, reject) => {
@@ -42,7 +39,7 @@ const insert = (collection, document) => {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(tablePath)) {
       let data = JSON.parse(fs.readFileSync(tablePath));
-      
+
       if (!("id" in document)) {
         let id = crypto.randomBytes(16).toString("hex");
         document["id"] = id;
@@ -66,7 +63,15 @@ const find = (collection, query) => {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(tablePath)) {
       const data = JSON.parse(fs.readFileSync(tablePath));
-      const results = filterDocuments(data[collection], query);
+
+      let results = [];
+      if (typeof query === "object") {
+        results = data[collection].filter((document) =>
+          Object.keys(query).every((key) => document[key] === query[key])
+        );
+      } else if (typeof query === "function") {
+        results = data[collection].filter(query);
+      }
       resolve(results);
     } else {
       reject(`No ${collection} collection found.`);
@@ -80,9 +85,16 @@ const update = (collection, query, set) => {
     if (fs.existsSync(tablePath)) {
       let data = JSON.parse(fs.readFileSync(tablePath));
 
+      let documentMatches;
+      if (typeof query === "object") {
+        documentMatches = (document) => Object.keys(query).every((key) => document[key] === query[key]);
+      } else if (typeof query === "function") {
+        documentMatches = query;
+      }
+
       let updatedDocuments = [];
       data[collection] = data[collection].map((document) => {
-        if (Object.keys(query).every((key) => document[key] === query[key])) {
+        if (documentMatches(document)) {
           const updatedDocument = { ...document, ...set };
           updatedDocuments.push(updatedDocument);
           return updatedDocument;
@@ -108,7 +120,15 @@ const remove = (collection, query, set) => {
     if (fs.existsSync(tablePath)) {
       let data = JSON.parse(fs.readFileSync(tablePath));
 
-      const documentsToDelete = filterDocuments(data[collection], query);
+      let documentsToDelete = [];
+      if (typeof query === "object") {
+        documentsToDelete = data[collection].filter((document) =>
+          Object.keys(query).every((key) => document[key] === query[key])
+        );
+      } else if (typeof query === "function") {
+        documentsToDelete = data[collection].filter(query);
+      }
+
       data[collection] = data[collection].filter((document) => !documentsToDelete.includes(document));
 
       try {

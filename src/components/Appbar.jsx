@@ -10,8 +10,8 @@ export const Appbar = () => {
       <Navbar.Group align={Alignment.LEFT}>
         <Navbar.Heading>Electron React App</Navbar.Heading>
         <Navbar.Divider />
-        <Button minimal icon="home" text="Home" onClick={() => goto("/")} />
-        <Button minimal icon="document" text="Files" onClick={() => goto("/showcase")} />
+        <Button minimal icon="database" text="Database" onClick={() => goto("/")} />
+        <Button minimal icon="clean" text="Capabilities" onClick={() => goto("/showcase")} />
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT}>
         <SettingsDialog triggerComponent={Button} triggerProps={{ icon: "cog" }}></SettingsDialog>

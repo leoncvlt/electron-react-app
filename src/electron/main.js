@@ -6,7 +6,7 @@ const path = require("path");
 const theme = require("../api/theme");
 
 // APIs for database collections
-require("../api/things").register();;
+require("../api/pokemon").register();;
 
 function createWindow() {
   // Create the browser window.
