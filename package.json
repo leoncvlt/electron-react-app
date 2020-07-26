@@ -1,8 +1,18 @@
 {
-  "name": "react-app",
+  "name": "electron-react-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
+  "main": "src/electron/main.js",
+  "build": {
+    "appId": "com.electron.react",
+    "extends": null,
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
   "dependencies": {
+    "@blueprintjs/core": "^3.30.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -11,8 +21,11 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env BROWSER=none react-scripts start",
+    "electron": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
     "build": "react-scripts build",
+    "preelectron-pack": "npm run build",
+    "electron-pack": "electron-builder --dir",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -30,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "electron": "^9.1.1",
+    "electron-builder": "^22.7.0"
   }
 }
