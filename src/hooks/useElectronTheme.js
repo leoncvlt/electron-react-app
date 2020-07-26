@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
+import { getNativeTheme, setNativeTheme, addThemeChangeListener, removeThemeChangeListener } from "../api/theme";
 
 export const useElectronTheme = () => {
   const getElectronTheme = async () => {
     const savedTheme = window.localStorage.getItem("theme");
-    return savedTheme ? savedTheme : await window.ipcRenderer.invoke("nativeTheme.themeSource.get");
+    return savedTheme ? savedTheme : await getNativeTheme();
   };
   const setElectronTheme = (theme) => {
-    window.ipcRenderer.invoke("nativeTheme.themeSource.set", theme);
+    setNativeTheme(theme);
     window.localStorage.setItem("theme", theme);
     _setNativeTheme(theme);
   };
 
-  const [nativeTheme, _setNativeTheme] = useState("")
+  const [nativeTheme, _setNativeTheme] = useState("");
   const [darkMode, setDarkMode] = useState();
 
   const onThemeChanged = (event, shoudlUseDarkMode) => {
@@ -19,15 +20,13 @@ export const useElectronTheme = () => {
   };
 
   useEffect(() => {
-    window.ipcRenderer.on("nativeTheme.updated", onThemeChanged);
+    addThemeChangeListener(onThemeChanged);
 
-    const refreshNativeTheme = async () => {
-      const theme = await getElectronTheme();
+    getElectronTheme().then((theme) => {
       setElectronTheme(theme);
-    };
-    refreshNativeTheme();
+    });
 
-    return () => window.ipcRenderer.off("nativeTheme.updated", onThemeChanged);
+    return () => removeThemeChangeListener(onThemeChanged);
   }, []);
 
   const getBlueprintTheme = () => (darkMode ? "bp3-dark" : "");

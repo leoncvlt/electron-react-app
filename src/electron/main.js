@@ -3,10 +3,10 @@ const { app, BrowserWindow, dialog, ipcMain } = require("electron");
 const path = require("path");
 
 // Events handlers
-const theme = require("./theme");
+const theme = require("../api/theme");
 
 // APIs for database collections
-const things = require("./api/things");
+require("../api/things").register();;
 
 function createWindow() {
   // Create the browser window.
@@ -37,7 +37,7 @@ function createWindow() {
 app.whenReady().then(() => {
   const mainWindow = createWindow();
 
-  // register any events handlers which need a reference to the window
+  // register any API handlers which need a reference to the window
   theme.register(mainWindow);
 
   app.on("activate", function () {

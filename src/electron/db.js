@@ -42,8 +42,11 @@ const insert = (collection, document) => {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(tablePath)) {
       let data = JSON.parse(fs.readFileSync(tablePath));
-      let id = crypto.randomBytes(16).toString("hex");
-      document["id"] = id;
+      
+      if (!("id" in document)) {
+        let id = crypto.randomBytes(16).toString("hex");
+        document["id"] = id;
+      }
       data[collection].push(document);
 
       try {

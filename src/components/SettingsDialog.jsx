@@ -1,21 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Dialog, Classes, RadioGroup, Radio } from "@blueprintjs/core";
 import { useElectronTheme } from "../hooks/useElectronTheme";
 
 export const SettingsDialog = ({ triggerComponent, triggerProps }) => {
   const { getBlueprintTheme, nativeTheme, setElectronTheme } = useElectronTheme();
-
   const [isOpen, setOpen] = useState(false);
-  // const [themeSetting, setThemeSetting] = useState("system");
 
-  // useEffect(() => {
-  //   const getTheme = async () => {
-  //     const theme = await getElectronTheme();
-  //     setThemeSetting(theme);
-  //     setElectronTheme(theme);
-  //   };
-  //   getTheme();
-  // }, []);
 
   const handleOpen = () => {
     setOpen(true);
