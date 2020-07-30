@@ -1,19 +1,44 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import { Button, HTMLTable, Tag, Tooltip, InputGroup, NonIdealState } from "@blueprintjs/core";
 import { freePokemon, catchPokemon, getPokemons, setPokemonLevel, getPokemonsWithNameContaining } from "../api/pokemon";
+import { createUseStyles } from "react-jss";
 
-const PokemonTable = styled(HTMLTable)`
-  width: 100%;
-  margin-top: 1rem;
-`;
+const useStyles = createUseStyles({
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  table: {
+    width: "100%",
+    marginTop: "1rem",
+  },
+  centered: {
+    textAlign: "center",
+  },
+  collapsingColumn: {
+    whiteSpace: "nowrap",
+    verticalAlign: "middle !important",
+  },
+  expandingColumn: {
+    width: "100%",
+    verticalAlign: "middle !important",
+  },
+  typeTag: {
+    marginRight: "0.5rem",
+  },
+  notFound: {
+    marginTop: "2rem",
+  },
+});
 
 export const PokemonPage = () => {
+  const classes = useStyles();
   const [pokemons, setPokemons] = useState([]);
   const [search, setSearch] = useState("");
-  const [shouldRefresh, refresh] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const handleCatchPokemon = async () => {
+    setLoading(true);
     const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * 150) + 1);
     const json = await response.json();
     const pokemon = {
@@ -24,7 +49,8 @@ export const PokemonPage = () => {
       types: json.types.map((t) => t.type.name),
     };
     await catchPokemon(pokemon);
-    refresh(true);
+    setLoading(false);
+    refreshPokemons();
   };
 
   const handleSearch = (event) => {
@@ -33,16 +59,15 @@ export const PokemonPage = () => {
 
   const handleIncreaseLevel = async (pokemon) => {
     await setPokemonLevel(pokemon.id, pokemon.level + 1);
-    refresh(true);
+    refreshPokemons();
   };
 
   const handleFreePokemon = async (id) => {
     await freePokemon(id);
-    refresh(true);
+    refreshPokemons();
   };
 
-  useEffect(() => {
-    refresh(false);
+  const refreshPokemons = () => {
     if (search) {
       getPokemonsWithNameContaining(search).then((results) => {
         setPokemons(results);
@@ -52,17 +77,16 @@ export const PokemonPage = () => {
         setPokemons(results);
       });
     }
-  }, [shouldRefresh, search]);
+  };
+
+  useEffect(() => {
+    refreshPokemons(search);
+  }, [search]);
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Button text="Catch new Pokemon" onClick={handleCatchPokemon} />
+      <div className={classes.topBar}>
+        <Button loading={isLoading} text="Catch new Pokemon" onClick={handleCatchPokemon} />
         <InputGroup
           leftIcon="search"
           placeholder="Filter Pokemons..."
@@ -72,33 +96,33 @@ export const PokemonPage = () => {
       </div>
 
       {pokemons.length > 0 ? (
-        <PokemonTable condensed striped>
+        <HTMLTable condensed striped className={classes.table}>
           <thead>
             <tr>
               <th></th>
               <th>Name</th>
               <th>Types</th>
-              <th style={{ textAlign: "center" }}>Actions</th>
+              <th className={classes.centered}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {pokemons.map((pokemon) => (
               <tr key={pokemon.id}>
-                <td style={{ whiteSpace: "nowrap", verticalAlign: "middle" }}>
-                  <img src={pokemon.image} alt={pokemon.name} style={{ width: "96px" }}></img>
+                <td className={classes.collapsingColumn}>
+                  <img src={pokemon.image} alt={pokemon.name}></img>
                 </td>
-                <td style={{ whiteSpace: "nowrap", verticalAlign: "middle" }}>
+                <td className={classes.collapsingColumn}>
                   <p>{pokemon.name}</p>
                   <p>Level {pokemon.level}</p>
                 </td>
-                <td style={{ width: "100%", verticalAlign: "middle" }}>
+                <td className={classes.expandingColumn}>
                   {pokemon.types.map((type) => (
-                    <Tag round key={type} style={{ marginRight: "0.5rem" }}>
+                    <Tag round key={type} className={classes.typeTag}>
                       {type}
                     </Tag>
                   ))}
                 </td>
-                <td style={{ whiteSpace: "nowrap", verticalAlign: "middle" }}>
+                <td className={classes.collapsingColumn}>
                   <Tooltip content="Give the pokemon a rare candy and increase its level by 1.">
                     <Button icon="new-object" onClick={() => handleIncreaseLevel(pokemon)} />
                   </Tooltip>
@@ -107,10 +131,11 @@ export const PokemonPage = () => {
               </tr>
             ))}
           </tbody>
-        </PokemonTable>
+        </HTMLTable>
       ) : (
         <NonIdealState
-          title="No Pokemon Found"
+          className={classes.notFound}
+          title="No Pokemons Found"
           description="Change your search terms, or start catching some pokemon!"
         ></NonIdealState>
       )}

@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import { createUseStyles } from "react-jss";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { Appbar } from "../components/Appbar";
@@ -7,29 +7,35 @@ import { ShowcasePage } from "../pages/ShowcasePage";
 import { useElectronTheme } from "../hooks/useElectronTheme";
 import { PokemonPage } from "../pages/PokemonPage";
 
-const AppContainer = styled.div`
-  background-color: ${(props) => (props.className.includes("bp3-dark") ? "#30404d" : "#f5f8fa")};
-  min-height: 100vh;
-`;
-
-const InnerContainer = styled.div`
-  padding: 1rem;
-`;
+const useStyles = createUseStyles({
+  app: {
+    backgroundColor: "#f5f8fa",
+    minHeight: "100vh",
+    "&.bp3-dark": {
+      backgroundColor: "#30404d",
+    },
+  },
+  container: {
+    padding: "1rem",
+  },
+});
 
 function App() {
+  const classes = useStyles();
+  console.log(classes);
   const { getBlueprintTheme } = useElectronTheme();
 
   return (
     <Router>
-      <AppContainer className={getBlueprintTheme()}>
+      <div className={`${classes.app} ${getBlueprintTheme()}`}>
         <Appbar />
-        <InnerContainer>
+        <div className={classes.container}>
           <Switch>
             <Route exact path="/" component={PokemonPage}></Route>
             <Route exact path="/showcase" component={ShowcasePage}></Route>
           </Switch>
-        </InnerContainer>
-      </AppContainer>
+        </div>
+      </div>
     </Router>
   );
 }
