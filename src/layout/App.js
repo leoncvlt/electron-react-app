@@ -22,7 +22,6 @@ const useStyles = createUseStyles({
 
 function App() {
   const classes = useStyles();
-  console.log(classes);
   const { getBlueprintTheme } = useElectronTheme();
 
   return (

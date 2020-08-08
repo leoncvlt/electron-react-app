@@ -7,30 +7,29 @@ const channels = {
   FIND_WITH_NAME: "pokemon.findWithName",
 };
 
-const collection = "pokemon";
-
 module.exports = {
   register: (window) => {
+    const db = require("minim-json-db");
     const { ipcMain } = require("electron");
-    const { create, insert, find, remove, update } = require("../electron/db");
 
-    // create the database collection if it doesn't exists
-    create(collection);
+    const pokemon = db.collection("pokemon");
 
-    ipcMain.handle(channels.INSERT, async (event, thing) => await insert(collection, thing));
-    ipcMain.handle(channels.FIND, async (event, query) => await find(collection, query));
-    ipcMain.handle(channels.REMOVE, async (event, query) => await remove(collection, query));
-    ipcMain.handle(channels.UPDATE, async (event, query, set) => await update(collection, query, set));
+    ipcMain.handle(channels.INSERT, async (event, newPokemon) => await pokemon.insert(newPokemon));
+    ipcMain.handle(channels.FIND, async (event, query) => await pokemon.find(query));
+    ipcMain.handle(channels.REMOVE, async (event, query) => await pokemon.delete(query));
+    ipcMain.handle(channels.UPDATE, async (event, query, set) => await pokemon.update(query, set));
 
     ipcMain.handle(channels.FIND_WITH_NAME, async (event, name) => {
       const searchMethod = (pokemon) => pokemon.name.toLowerCase().includes(name.toLowerCase());
-      return await find(collection, searchMethod);
+      return await pokemon.find(searchMethod);
     });
   },
 
-  catchPokemon: async (pokemon) => await window.ipcRenderer.invoke(channels.INSERT, pokemon),
+  catchPokemon: async (newPokemon) => await window.ipcRenderer.invoke(channels.INSERT, newPokemon),
   getPokemons: async () => await window.ipcRenderer.invoke(channels.FIND, {}),
-  getPokemonsWithNameContaining: async (string) => await window.ipcRenderer.invoke(channels.FIND_WITH_NAME, string),
-  setPokemonLevel: async (id, level) => await window.ipcRenderer.invoke(channels.UPDATE, { id }, { level }),
+  getPokemonsWithNameContaining: async (string) =>
+    await window.ipcRenderer.invoke(channels.FIND_WITH_NAME, string),
+  setPokemonLevel: async (id, level) =>
+    await window.ipcRenderer.invoke(channels.UPDATE, { id }, { level }),
   freePokemon: async (id) => await window.ipcRenderer.invoke(channels.REMOVE, { id }),
 };

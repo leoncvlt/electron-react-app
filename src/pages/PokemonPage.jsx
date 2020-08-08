@@ -39,7 +39,7 @@ export const PokemonPage = () => {
 
   const handleCatchPokemon = async () => {
     setLoading(true);
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * 150) + 1);
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + Math.ceil(Math.random() * 150));
     const json = await response.json();
     const pokemon = {
       id: json.id,
