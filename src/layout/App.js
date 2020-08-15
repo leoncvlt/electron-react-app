@@ -3,9 +3,11 @@ import { createUseStyles } from "react-jss";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { Appbar } from "../components/Appbar";
-import { ShowcasePage } from "../pages/ShowcasePage";
 import { useElectronTheme } from "../hooks/useElectronTheme";
 import { PokemonPage } from "../pages/PokemonPage";
+import { AboutPage } from "../pages/AboutPage";
+import { NetworkStateContextProvider } from "../context/NetworkStateContext";
+import { NetworkStateCallout } from "../components/NetworkStateCallout";
 
 const useStyles = createUseStyles({
   app: {
@@ -26,15 +28,18 @@ function App() {
 
   return (
     <Router>
-      <div className={`${classes.app} ${getBlueprintTheme()}`}>
-        <Appbar />
-        <div className={classes.container}>
-          <Switch>
-            <Route exact path="/" component={PokemonPage}></Route>
-            <Route exact path="/showcase" component={ShowcasePage}></Route>
-          </Switch>
+      <NetworkStateContextProvider>
+        <div className={`${classes.app} ${getBlueprintTheme()}`}>
+          <Appbar />
+          <div className={classes.container}>
+            <Switch>
+              <Route exact path="/" component={PokemonPage}></Route>
+              <Route exact path="/about" component={AboutPage}></Route>
+            </Switch>
+          </div>
+          <NetworkStateCallout />
         </div>
-      </div>
+      </NetworkStateContextProvider>
     </Router>
   );
 }

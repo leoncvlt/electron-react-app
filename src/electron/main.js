@@ -1,12 +1,9 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, ipcMain } = require("electron");
+const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
-// Events handlers
-const theme = require("../api/theme");
-
 // APIs for database collections
-require("../api/pokemon").register();;
+require("../api/pokemon/pokemon").register();
 
 function createWindow() {
   // Create the browser window.
@@ -26,7 +23,10 @@ function createWindow() {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
+
+  // Remove the context menu at the top
+  mainWindow.removeMenu();
 
   return mainWindow;
 }
@@ -37,8 +37,8 @@ function createWindow() {
 app.whenReady().then(() => {
   const mainWindow = createWindow();
 
-  // register any API handlers which need a reference to the window
-  theme.register(mainWindow);
+  // register any API handlers which need a reference to the browser window
+  require("../api/theme/theme").register(mainWindow);
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
@@ -52,11 +52,4 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on("window-all-closed", function () {
   if (process.platform !== "darwin") app.quit();
-});
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-ipcMain.handle("open-dialog", async () => {
-  const files = await dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] });
-  return files;
 });

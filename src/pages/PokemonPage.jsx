@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, HTMLTable, Tag, Tooltip, InputGroup, NonIdealState } from "@blueprintjs/core";
-import { freePokemon, catchPokemon, getPokemons, setPokemonLevel, getPokemonsWithNameContaining } from "../api/pokemon";
+import {
+  freePokemon,
+  catchPokemon,
+  getPokemons,
+  setPokemonLevel,
+  getPokemonsWithNameContaining,
+} from "../api/pokemon/methods";
 import { createUseStyles } from "react-jss";
+import NetworkStateContext from "../context/NetworkStateContext";
 
 const useStyles = createUseStyles({
   topBar: {
@@ -33,13 +40,18 @@ const useStyles = createUseStyles({
 
 export const PokemonPage = () => {
   const classes = useStyles();
+  const online = useContext(NetworkStateContext);
   const [pokemons, setPokemons] = useState([]);
   const [search, setSearch] = useState("");
   const [isLoading, setLoading] = useState(false);
 
+  console.log(online);
+
   const handleCatchPokemon = async () => {
     setLoading(true);
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + Math.ceil(Math.random() * 150));
+    const response = await fetch(
+      "https://pokeapi.co/api/v2/pokemon/" + Math.ceil(Math.random() * 150)
+    );
     const json = await response.json();
     const pokemon = {
       id: json.id,
@@ -86,7 +98,12 @@ export const PokemonPage = () => {
   return (
     <>
       <div className={classes.topBar}>
-        <Button loading={isLoading} text="Catch new Pokemon" onClick={handleCatchPokemon} />
+        <Button
+          loading={isLoading}
+          text="Catch new Pokemon"
+          onClick={handleCatchPokemon}
+          disabled={!online}
+        />
         <InputGroup
           leftIcon="search"
           placeholder="Filter Pokemons..."

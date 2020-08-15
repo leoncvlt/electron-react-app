@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Button, Navbar, Alignment, Dialog } from "@blueprintjs/core";
+import { Button, Navbar, Alignment } from "@blueprintjs/core";
 import { SettingsDialog } from "./SettingsDialog";
 
 export const Appbar = () => {
@@ -11,12 +11,11 @@ export const Appbar = () => {
         <Navbar.Heading>Electron React App</Navbar.Heading>
         <Navbar.Divider />
         <Button minimal icon="database" text="Database" onClick={() => goto("/")} />
-        <Button minimal icon="clean" text="Capabilities" onClick={() => goto("/showcase")} />
+        <Button minimal icon="clean" text="About" onClick={() => goto("/about")} />
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT}>
-        <SettingsDialog triggerComponent={Button} triggerProps={{ icon: "cog" }}></SettingsDialog>
+        <SettingsDialog triggerComponent={Button} triggerProps={{ icon: "cog" }} />
       </Navbar.Group>
-      <Dialog></Dialog>
     </Navbar>
   );
 };

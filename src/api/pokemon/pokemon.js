@@ -1,11 +1,4 @@
-const channels = {
-  INSERT: "pokemon.insert",
-  FIND: "pokemon.find",
-  REMOVE: "pokemon.remove",
-  UPDATE: "pokemon.update",
-
-  FIND_WITH_NAME: "pokemon.findWithName",
-};
+const channels = require("./channels");
 
 module.exports = {
   register: (window) => {
@@ -24,12 +17,4 @@ module.exports = {
       return await pokemon.find(searchMethod);
     });
   },
-
-  catchPokemon: async (newPokemon) => await window.ipcRenderer.invoke(channels.INSERT, newPokemon),
-  getPokemons: async () => await window.ipcRenderer.invoke(channels.FIND, {}),
-  getPokemonsWithNameContaining: async (string) =>
-    await window.ipcRenderer.invoke(channels.FIND_WITH_NAME, string),
-  setPokemonLevel: async (id, level) =>
-    await window.ipcRenderer.invoke(channels.UPDATE, { id }, { level }),
-  freePokemon: async (id) => await window.ipcRenderer.invoke(channels.REMOVE, { id }),
 };

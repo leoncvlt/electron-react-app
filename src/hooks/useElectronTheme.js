@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { getNativeTheme, setNativeTheme, addThemeChangeListener, removeThemeChangeListener } from "../api/theme";
+import {
+  getNativeTheme,
+  setNativeTheme,
+  addThemeChangeListener,
+  removeThemeChangeListener,
+} from "../api/theme/methods";
 
 export const useElectronTheme = () => {
   const getElectronTheme = async () => {
