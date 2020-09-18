@@ -5,9 +5,10 @@ import NetworkStateContext from "../context/NetworkStateContext";
 
 const useStyles = createUseStyles({
   callout: {
-    position: "absolute",
+    position: "sticky",
     borderRadius: 0,
     bottom: 0,
+    backdropFilter: "blur(32px)"
   },
 });
 
