@@ -1,49 +1,60 @@
-import React, { useState } from "react";
-import { Button } from "@blueprintjs/core";
+import React, { useState, useEffect } from "react";
+import { createUseStyles } from "react-jss";
+import { Button, Spinner } from "@blueprintjs/core";
 
-export const AboutPage = () => (
-  <>
-    <h1 id="electron-react-app">electron-react-app</h1>
-    <p>
-      A boilerplate for a react-based electron desktop application, with local database support and
-      fancy touches like dark / light theme and offline detection.
-    </p>
-    <p>The application is set up with:</p>
-    <ul>
-      <li>
-        <a href="https://www.electronjs.org/" target="_blank">Electron</a>
-      </li>
-      <li>
-        <a href="https://github.com/facebook/create-react-app" target="_blank">Create React App</a> for easy react
-        bootstrapping
-      </li>
-      <li>
-        <a href="https://reactrouter.com/" target="_blank">React Router</a> for internal page routing
-      </li>
-      <li>
-        <a href="https://blueprintjs.com/" target="_blank">Blueprint</a> as UI framework
-      </li>
-      <li>
-        <a href="https://cssinjs.org/react-jss" target="_blank">React-JSS</a> as styling solution
-      </li>
-      <li>
-        <a href="https://www.npmjs.com/package/minim-json-db" target="_blank">minim-json-db</a> for database
-        integration
-      </li>
-    </ul>
-    <h2 id="development">Development</h2>
-    <p>
-      <code>npm run start</code> will start the a development server with hot reload, as well with
-      an electron window pointing to the same server, so you can see the changes in real-time in the
-      electron window.
-    </p>
-    <p>
-      <code>npm run build</code> will package the electron application using{" "}
-      <a href="https://www.electron.build/">electron-builder</a> as a stand-alone executable.{" "}
-    </p>
-    <p>
-      <code>npm run dist</code> will package the application as well, but creating an installer
-      instead.
-    </p>
-  </>
-);
+const useStyles = createUseStyles({
+  refreshButton: {
+    float: "right",
+  },
+  spinner: {
+    paddingTop: "2rem",
+  },
+});
+
+export const AboutPage = () => {
+  const classes = useStyles();
+  const [html, setHtml] = useState("");
+
+  const fetchAbout = async () => {
+    const cachedText = window.localStorage.getItem("aboutPageText");
+
+    if (!cachedText) {
+      const response = await fetch(
+        "https://raw.githubusercontent.com/leoncvlt/electron-react-app/master/README.md"
+      );
+      const markdown = await response.text();
+
+      const markdownResponse = await fetch("https://api.github.com/markdown/raw", {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: markdown,
+      });
+      const pageHtml = await markdownResponse.text();
+      window.localStorage.setItem("aboutPageText", pageHtml);
+      setHtml(pageHtml);
+    } else {
+      setHtml(cachedText);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchAbout();
+  };
+
+  useEffect(() => {
+    fetchAbout();
+  }, []);
+
+  return html ? (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <Button className={classes.refreshButton} icon="refresh" onClick={() => handleRefresh()}>
+        Refresh text
+      </Button>
+    </>
+  ) : (
+    <Spinner className={classes.spinner} value={"Fetching README..."}></Spinner>
+  );
+};
