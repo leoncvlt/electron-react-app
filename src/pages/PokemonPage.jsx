@@ -45,8 +45,6 @@ export const PokemonPage = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  console.log(online);
-
   const handleCatchPokemon = async () => {
     setLoading(true);
     const response = await fetch(
